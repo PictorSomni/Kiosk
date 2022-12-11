@@ -18,5 +18,6 @@ This text file is in append mode so you can make several orders in the same fold
 You can copy the photo selection by uncomment lines 350 to 352 but in my case the customers selects their photos before i photoshop them so i prefer not to copy anything.
 
 The UI in optimized for touchscreens. ;)
+The UI is in french but you can easily change it in the code.
 
 ![UI_screenshot](https://user-images.githubusercontent.com/16622605/206891272-a660bcbf-c6df-4301-b463-546844b56c35.jpg)
