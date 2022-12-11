@@ -19,5 +19,6 @@ You can copy the photo selection by uncomment lines 350 to 352 but in my case th
 
 The UI in optimized for touchscreens. ;)
 The UI is in french but you can easily change it in the code.
+It's in french but you can easily change it in code.
 
 ![UI_screenshot](https://user-images.githubusercontent.com/16622605/206891272-a660bcbf-c6df-4301-b463-546844b56c35.jpg)
