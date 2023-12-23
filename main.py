@@ -310,7 +310,12 @@ class GUI(QtWidgets.QMainWindow):
         pixmap = QtGui.QPixmap(f"{self.path}/{self.images[self.current_index]}")
         
         scaled_pixmap = pixmap.scaled(CONSTANT.RESOLUTION[0], CONSTANT.RESOLUTION[1], QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
-        self.preview.big_image.setPixmap(scaled_pixmap)        
+        
+        # ROTATE THE PIXMAP TO THE CORRECT ORIENTATION BASED ON THE EXIF DATA
+        self.rotation = self.get_exif_rotation_angle(f"{self.path}/{self.images[self.current_index]}")
+        rotation = QtGui.QTransform().rotate(self.rotation)
+        rotated_pixmap = scaled_pixmap.transformed(rotation)
+        self.preview.big_image.setPixmap(rotated_pixmap)        
         self.preview.show()
         # self.preview.showFullScreen()
 
