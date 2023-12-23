@@ -11,7 +11,7 @@ from ui_image_widget import Ui_Form
 from ui_preview_widget import Ui_Preview
 from qt_material import apply_stylesheet
 from crop import Crop_frame
-from PIL import Image
+import piexif
 
 # CONSTANTS
 import CONSTANT
@@ -51,6 +51,7 @@ class GUI(QtWidgets.QMainWindow):
         self.path=""
         self.current_index = 0
         self.price = 0.0
+        self.rotation = 0
         
         ## SET FONT SIZE AND COLORS
         self.setStyleSheet(
@@ -88,6 +89,21 @@ class GUI(QtWidgets.QMainWindow):
 
     ## --> APP FUNCTIONS
     ############################################
+    # USE THE PIEXIF MODULE TO EXTRACT ORIENTATION DATA FROM IMAGE'S EXIF
+    def get_exif_rotation_angle(self, picture):
+        exif_dict = piexif.load(picture)
+        if piexif.ImageIFD.Orientation in exif_dict["0th"]:
+            orientation = exif_dict["0th"][piexif.ImageIFD.Orientation]
+            if orientation == 3:
+                return 180
+            elif orientation == 6:
+                return 90
+            elif orientation == 8:
+                return 270
+        else:
+            return 0
+        
+
     def print_selection(self, image, which_button, widget):
         result = eval(f"{widget.spinBox.value()} {which_button} 1")
         self.price = round(eval(f"{self.ui.label_price.text()} {which_button} {CONSTANT.SIZES[self.current_size]}"), 2)
@@ -225,14 +241,19 @@ class GUI(QtWidgets.QMainWindow):
             image_widget.button_add.setText("+")
             image_widget.button_remove.setText("-")
 
-            ## PUTS IMAGES IN LABEL
+            ## PUTS IMAGES IN LABEL            
             pixmap = QtGui.QPixmap(f"{self.path}/{image}")
             if pixmap.isNull():
                 continue
-
+            
             scaled_pixmap = pixmap.scaled(
                     CONSTANT.PREVIEW_SIZE, CONSTANT.PREVIEW_SIZE, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
-            image_widget.label_image.setPixmap(scaled_pixmap)
+            
+            # ROTATE THE PIXMAP TO THE CORRECT ORIENTATION BASED ON THE EXIF DATA
+            self.rotation = self.get_exif_rotation_angle(f"{self.path}/{image}")
+            rotation = QtGui.QTransform().rotate(self.rotation)
+            rotated_pixmap = scaled_pixmap.transformed(rotation)
+            image_widget.label_image.setPixmap(rotated_pixmap)
 
             ## SETTING UP THE GRID VIEW
             if x_counter < CONSTANT.MAX_COLUMN:
